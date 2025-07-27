@@ -139,7 +139,7 @@ When you submit a forecasting task (such as eg: "Analyze the last three quarters
      MODEL_NAME=llama-3.3-70b-versatile
      ```
 5. **Prepare Data**
-   - Place TCS quarterly financial reports in `docs/Reports/` and earnings call transcripts in `docs/Transcripts/`.
+   - Place TCS quarterly financial reports in `app/docs/Reports/` and earnings call transcripts in `app/docs/Transcripts/`.
    - The vector store will be built automatically on first run (see `app/tools/vectorstore.py`).
 6. **Set Up MySQL Database**
    - Ensure MySQL 8.0+ is running and accessible.
