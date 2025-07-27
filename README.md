@@ -159,7 +159,8 @@ uvicorn app.main:app --reload
 uvicorn app.main:app --reload --port 8011
 ```
 Note: upon the first run, vector store (`app/tools/chroma_db`) and process logs(`logs/app.log`) is created
-### 2. Make a Forecast Request (Input is `task: str`)
+### 2. Make a Forecast Request
+User should input a task (string) as shown:
 
 #### Using Postman or curl:
 ```bash
