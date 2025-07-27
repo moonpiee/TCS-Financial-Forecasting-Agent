@@ -23,7 +23,7 @@
    ```
 4. **Configure Environment Variables**
    - Copy `.env.example` to `.env` and fill in your credentials:
-     - `GROQ_API_KEY` (for LLM access)
+     - `GROQ_API_KEY` (for LLM access. Get your GROQ API KEY here: https://console.groq.com/keys)
      - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (for MySQL)
      - `MODEL_NAME` (for analysis and generation)
    - Example `.env`:
@@ -59,26 +59,25 @@
 ---
 
 ## Architectural Approach & Design Choices
+![Forecast Agent Process Flow Diagram](app/img/img5.png)
 - **Modular Tooling:** Each tool is responsible for a distinct part of the analysis pipeline (financial extraction, qualitative analysis, market data).
 - **Retrieval-Augmented Generation (RAG):** Uses a vector store to semantically search and ground the LLM's responses in actual transcript content.
 - **LLM Orchestration:** LangChain chains tool outputs and prompts the LLM (Groq's llama-3.3-70b-versatile) with a master prompt for structured, reasoned output.
 - **Robust Logging:** All API requests and responses are logged in a MySQL table.
 - **Separation of Concerns:** Tools, agent logic, and API layer are cleanly separated for clarity and testability.
-
+  
 ---
 
 ## How the Forecasting Agent Works (Process Flow)
 
 When you submit a forecasting task (such as "Analyze the last three quarters and provide a qualitative forecast for the upcoming quarter"), your request is received by the FastAPI `/forecast` endpoint. The agent then springs into action, orchestrating three specialized tools in parallel:
 
-- **FinancialDataExtractorTool** dives into the latest quarterly financial reports (from `data/financial_reports/`) to extract key metrics like revenue, net profit, and margins.
-- **QualitativeAnalysisTool** semantically searches and analyzes recent earnings call transcripts (from `data/transcripts/`) to identify recurring themes, management sentiment, and forward-looking statements.
-- **MarketDataTool** fetches the latest market data (such as current price and market cap) from a public source.
+- **FinancialDataExtractorTool** dives into the latest quarterly financial reports (from `app/docs/Reports/`) to extract key metrics like revenue, net profit, and margins.
+- **QualitativeAnalysisTool** semantically searches and analyzes recent earnings call transcripts (from `app/docs/Transcripts/`) to identify recurring themes, management sentiment, and forward-looking statements.
+- **MarketDataTool** fetches the latest market data (such as current price and market cap) from a public source (here https://www.screener.in/company/TCS/consolidated/#documents).
 
-All of these insights are then provided as context to a large language model (LLM) via LangChain, which synthesizes a comprehensive, structured forecast using a master prompt. The result is a clear, machine-readable JSON forecast that highlights trends, management outlook, risks, opportunities, and assumptions. Both your request and the agent's response are logged to a MySQL database for traceability and monitoring. This parallel, modular approach ensures your forecasts are fast, robust, and deeply reasoned.
-
-Process Flow diagram:
-![Forecast Agent Process Flow Diagram](img/img5.png)
+- All of these insights are then provided as context to a large language model (LLM) via LangChain, which synthesizes a comprehensive, structured forecast using a master prompt. The result is a clear, machine-readable JSON forecast that highlights trends, management outlook, risks, opportunities, and assumptions. 
+- Both your request and the agent's response are logged to a MySQL database for traceability and monitoring. This parallel, modular approach ensures your forecasts are fast, robust, and deeply reasoned.
 
 ---
 
@@ -172,7 +171,7 @@ curl -X POST "http://localhost:8000/forecast" \
 - The response will be a structured JSON object with trends, management outlook, risks, opportunities, assumptions, and an overall forecast.
 
 #### Using Interactive API Docs:
-- Open your browser and go to: `http://127.0.0.1:8000/docs`
+- Open your browser and go to: `http://127.0.0.1:8000/docs` (Note: port may vary according to user)
 - Click on the `/forecast` endpoint, then "Try it out", enter your forecasting task, and click "Execute".
 
 ---
@@ -180,20 +179,20 @@ curl -X POST "http://localhost:8000/forecast" \
 ## Sample Outputs
 
 **API Docs Example:**
-![API Docs Screenshot 1](img/img1.png)
-![API Docs Screenshot 2](img/img2.png)
+![API Docs Screenshot 1](app/img/img1.png)
+![API Docs Screenshot 2](app/img/img2.png)
 
 **Streamlit Forecast Example:**
 - Enter your FastAPI URL and forecasting task, then click "Generate Forecast".
-![Streamlit UI Forecast Agent Screenshot](img/img3.png)
+![Streamlit UI Forecast Agent Screenshot](app/img/img3.png)
 
 **Streamlit Logs Example:**
 - Choose credentials mode, view/download logs, and expand for details.
-![Streamlit UI SQL Logs Screenshot](img/img4.png)
+![Streamlit UI SQL Logs Screenshot](app/img/img4.png)
 
 ---
 
-## Streamlit Dashboard (Optional)
+## Streamlit Dashboard (for UI)
 
 1. **Run FastAPI** (as above)
 2. **Run Streamlit**
@@ -212,6 +211,3 @@ curl -X POST "http://localhost:8000/forecast" \
 - If the vector store is empty, ensure your data files are present and readable.
 
 ---
-
-## License
-MIT 
